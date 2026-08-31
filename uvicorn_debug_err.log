@@ -1,0 +1,26 @@
+INFO:     Will watch for changes in these directories: ['C:\\Users\\santi\\OneDrive\\Desktop\\proyectos\\Finanzas\\sistema_volatilidad']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [11800] using StatReload
+INFO:     Started server process [24116]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'backend.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [24116]
+INFO:     Started server process [5744]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'test_backend.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [5744]
+INFO:     Started server process [3672]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'test_backend.py'. Reloading...
+2026-08-30 10:08:08,073 - INFO - cache hit: trenches market trenches --chain sol
+2026-08-30 10:08:10,628 - INFO - cache hit: trenches market trenches --chain sol
+2026-08-30 10:20:09,261 - INFO - cache hit: trenches market trenches --chain sol

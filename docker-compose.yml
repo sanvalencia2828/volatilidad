@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  scanner-backend:
+    build: .
+    ports:
+      - "8001:8001"
+    env_file:
+      - .env
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+      - GMGN_BAN_WAIT=210
+    restart: always

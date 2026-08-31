@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GMGN Scanner</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Volatility Scanner</p>
+          <h1>GMGN Market Filter</h1>
+        </div>
+        <div class="status-pill" id="statusPill">Checking backend...</div>
+      </header>
+
+      <section class="panel controls">
+        <form id="filtersForm">
+          <div class="field-group">
+            <label for="chain">Chain</label>
+            <select id="chain" name="chain">
+              <option value="sol">Solana</option>
+              <option value="bsc">BSC</option>
+              <option value="base">Base</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label for="min_marketcap">Min market cap</label>
+            <input id="min_marketcap" name="min_marketcap" type="number" value="50000" />
+          </div>
+
+          <div class="field-group">
+            <label for="max_marketcap">Max market cap</label>
+            <input id="max_marketcap" name="max_marketcap" type="number" value="200000" />
+          </div>
+
+          <div class="field-group">
+            <label for="min_liquidity">Min liquidity</label>
+            <input id="min_liquidity" name="min_liquidity" type="number" value="10000" />
+          </div>
+
+          <div class="field-group">
+            <label for="max_top_holder_rate">Max top holder rate</label>
+            <input id="max_top_holder_rate" name="max_top_holder_rate" type="number" step="0.01" value="0.2" />
+          </div>
+
+          <div class="field-group">
+            <label for="max_bundler_rate">Max bundler rate</label>
+            <input id="max_bundler_rate" name="max_bundler_rate" type="number" step="0.01" value="0.2" />
+          </div>
+
+          <div class="field-group">
+            <label for="max_fresh_wallet_rate">Max fresh wallet rate</label>
+            <input id="max_fresh_wallet_rate" name="max_fresh_wallet_rate" type="number" step="0.01" value="0.2" />
+          </div>
+
+          <div class="field-group">
+            <label for="limit">Limit</label>
+            <input id="limit" name="limit" type="number" value="80" />
+          </div>
+
+          <div class="actions">
+            <button type="submit">Run scan</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel summary">
+        <div>
+          <span class="summary-label">Results</span>
+          <h2 id="summaryCount">0 tokens</h2>
+        </div>
+      </section>
+
+      <section class="panel results">
+        <div id="loading" class="loading hidden">Loading tokens...</div>
+        <div id="results" class="results-grid"></div>
+      </section>
+    </div>
+
+    <!-- Dossier Modal / Drawer -->
+    <div id="dossierModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modalSymbol">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title-wrap">
+            <span class="modal-badge" id="modalChain">SOL</span>
+            <div>
+              <h2 id="modalSymbol" class="modal-symbol">TOKEN</h2>
+              <div class="modal-token-name" id="modalName">Token Name</div>
+            </div>
+          </div>
+          <button id="modalCloseBtn" class="modal-close" title="Cerrar modal">&times;</button>
+        </div>
+
+        <div class="modal-address-bar">
+          <span class="address-label">CA:</span>
+          <span id="modalAddress" class="modal-address-val">—</span>
+          <button id="copyAddressBtn" class="copy-btn" title="Copiar dirección">Copiar</button>
+        </div>
+
+        <div id="modalLoading" class="modal-loading hidden">
+          <div class="spinner"></div>
+          <span>Consultando velas 5m y telemetría en tiempo real...</span>
+        </div>
+
+        <div id="modalError" class="modal-error hidden"></div>
+
+        <div id="modalBody" class="modal-body">
+          <!-- Overview Cards -->
+          <div class="dossier-grid overview-grid">
+            <div class="dossier-card">
+              <span class="dossier-card-label">Precio</span>
+              <span class="dossier-card-value text-accent" id="dossierPrice">—</span>
+            </div>
+            <div class="dossier-card">
+              <span class="dossier-card-label">Market Cap</span>
+              <span class="dossier-card-value" id="dossierMarketCap">—</span>
+            </div>
+            <div class="dossier-card">
+              <span class="dossier-card-label">Liquidez</span>
+              <span class="dossier-card-value" id="dossierLiquidity">—</span>
+            </div>
+          </div>
+
+          <!-- Seguridad Section -->
+          <div class="dossier-section">
+            <h3 class="section-heading">
+              <span class="heading-icon">🛡️</span> Seguridad y Riesgo
+            </h3>
+            <div class="dossier-grid metrics-grid">
+              <div class="metric-box">
+                <span class="metric-sub">Dev Hold %</span>
+                <span class="metric-val" id="dossierDevHold">—</span>
+              </div>
+              <div class="metric-box">
+                <span class="metric-sub">Top 10 Holders</span>
+                <span class="metric-val" id="dossierTop10">—</span>
+              </div>
+              <div class="metric-box">
+                <span class="metric-sub">Bundler %</span>
+                <span class="metric-val" id="dossierBundler">—</span>
+              </div>
+              <div class="metric-box">
+                <span class="metric-sub">Fresh Wallets</span>
+                <span class="metric-val" id="dossierFresh">—</span>
+              </div>
+              <div class="metric-box">
+                <span class="metric-sub">Rug Ratio</span>
+                <span class="metric-val" id="dossierRugRatio">—</span>
+              </div>
+              <div class="metric-box">
+                <span class="metric-sub">Mint Renounced</span>
+                <span class="metric-val" id="dossierMintRenounced">—</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Smart Money Section -->
+          <div class="dossier-section">
+            <h3 class="section-heading">
+              <span class="heading-icon">🧠</span> Smart Money & KOLs
+            </h3>
+            <div class="dossier-grid sm-grid">
+              <div class="metric-box highlight-sm">
+                <span class="metric-sub">Smart Money Comprando</span>
+                <span class="metric-val text-primary" id="dossierSmartMoney">—</span>
+              </div>
+              <div class="metric-box highlight-kol">
+                <span class="metric-sub">KOLs Involucrados</span>
+                <span class="metric-val text-accent" id="dossierKolCount">—</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Acción de Precio Section -->
+          <div class="dossier-section">
+            <h3 class="section-heading">
+              <span class="heading-icon">📈</span> Acción de Precio (Últimas 10 velas 5m)
+            </h3>
+            <div class="kline-box" id="dossierKlinesContainer">
+              <div class="kline-table-wrapper">
+                <table class="kline-table">
+                  <thead>
+                    <tr>
+                      <th>Hora</th>
+                      <th>Cierre</th>
+                      <th>Apertura</th>
+                      <th>Máx</th>
+                      <th>Mín</th>
+                      <th>Volumen</th>
+                      <th>Var %</th>
+                    </tr>
+                  </thead>
+                  <tbody id="dossierKlinesTableBody">
+                    <tr><td colspan="7" class="text-center">Sin datos de velas</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button id="modalCloseFooterBtn" class="btn-secondary">Cerrar</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js?v=3"></script>
+  </body>
+</html>
