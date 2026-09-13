@@ -17,16 +17,20 @@ Instalar dependencias:
 
 ## Backend Local
 
+Abrir la interfaz en:
+
+`http://127.0.0.1:8000/`
+
 Iniciar únicamente el backend:
 
 ```powershell
-.venv\Scripts\python.exe -m uvicorn backend:app --host 127.0.0.1 --port 8001
+.venv\Scripts\python.exe -m uvicorn backend:app --host 127.0.0.1 --port 8000
 ```
 
 Comprobar estado:
 
 ```powershell
-Invoke-RestMethod http://127.0.0.1:8001/health
+Invoke-RestMethod http://127.0.0.1:8000/health
 ```
 
 Endpoints disponibles:
@@ -35,7 +39,7 @@ Endpoints disponibles:
 - `POST /api/run`
 - `GET /api/dossier?chain=sol&address=<TOKEN>`
 
-El endpoint `/api/enrich` no existe. La UI utiliza `/api/dossier`.
+La UI consume el endpoint `/api/dossier` y se sirve desde la raíz (`/`) de la aplicación.
 
 ## Tests
 
@@ -54,7 +58,7 @@ Ejecutar con los valores por defecto, 100 tokens y 7 días:
 .venv\Scripts\python.exe -m backtest.engine
 ```
 
-El engine usa actualmente `MockFetcher` para validar el pipeline completo sin
+El engine puede usar datos históricos reales de GMGN mediante `HistoricalFetcher`.
 
 Componentes principales:
 
@@ -68,7 +72,4 @@ Componentes principales:
 
 Con Docker Desktop iniciado:
 
-```powershell
-```
-
-La configuración publica el backend en `http://127.0.0.1:8001`.
+La configuración publica la aplicación en `http://127.0.0.1:8000/`.
