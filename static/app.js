@@ -13,6 +13,7 @@ const modalLoading = document.getElementById('modalLoading');
 const modalError = document.getElementById('modalError');
 
 const modalChainEl = document.getElementById('modalChain');
+const modalSourceEl = document.getElementById('modalSource');
 const modalSymbolEl = document.getElementById('modalSymbol');
 const modalNameEl = document.getElementById('modalName');
 const modalAddressEl = document.getElementById('modalAddress');
@@ -58,6 +59,18 @@ function formatPrice(value) {
   if (num < 0.01) return `$${num.toFixed(7)}`;
   if (num < 1) return `$${num.toFixed(4)}`;
   return `$${num.toFixed(2)}`;
+}
+
+function formatValue(value, formatter = formatNumber) {
+  const num = Number(value);
+  if (value === null || value === undefined || value === '' || !Number.isFinite(num) || num === 0) {
+    return 'No disponible';
+  }
+  return formatter(value);
+}
+
+function formatUSD(value) {
+  return formatValue(value, formatNumber);
 }
 
 function formatPercent(value) {
@@ -192,7 +205,7 @@ async function openDossier(address, chain = 'sol', prefill = null) {
 
   // Immediately prefill and display all known metrics with 0 lag
   if (prefill) {
-    populateDossier(prefill);
+    renderDossier(prefill);
   } else {
     modalSymbolEl.textContent = 'Cargando...';
     modalNameEl.textContent = '—';
@@ -238,7 +251,7 @@ async function openDossier(address, chain = 'sol', prefill = null) {
     }
 
     const data = await response.json();
-    populateDossier(data);
+     renderDossier(data);
   } catch (err) {
     if (err.name === 'AbortError') {
       console.warn('La consulta de velas tardó más de 15s; mostrando datos base pre-cargados.');
@@ -252,18 +265,23 @@ async function openDossier(address, chain = 'sol', prefill = null) {
   }
 }
 
-function populateDossier(data) {
+function renderDossier(data) {
   if (!data) return;
 
   modalSymbolEl.textContent = data.symbol || 'UNKNOWN';
   modalNameEl.textContent = data.name || data.symbol || '—';
   modalChainEl.textContent = (data.chain || currentChain || 'sol').toUpperCase();
+  modalSourceEl.textContent = data.source || 'GMGN';
   modalAddressEl.textContent = data.address || '—';
 
   // Overview
-  dossierPriceEl.textContent = formatPrice(data.price);
-  dossierMarketCapEl.textContent = formatNumber(data.market_cap ?? data.marketCap);
-  dossierLiquidityEl.textContent = formatNumber(data.liquidity);
+  dossierPriceEl.textContent = formatValue(data.price, formatPrice);
+  dossierMarketCapEl.textContent = formatUSD(data.market_cap ?? data.marketCap);
+  dossierLiquidityEl.textContent = formatUSD(data.liquidity);
+  if (!Number(data.price) && !Number(data.market_cap) && !Number(data.liquidity)) {
+    modalError.textContent = 'No hay datos disponibles para este token.';
+    modalError.classList.remove('hidden');
+  }
 
   // Security
   const devHold = Number(data.dev_hold ?? data.devHold ?? 0);
@@ -297,9 +315,7 @@ function populateDossier(data) {
   dossierKolCountEl.textContent = `${kolCount} KOLs`;
 
   // Klines
-  if (Array.isArray(data.klines) && data.klines.length > 0) {
-    renderKlines(data.klines);
-  }
+  renderKlines(data.klines);
 }
 
 function renderKlines(klines) {

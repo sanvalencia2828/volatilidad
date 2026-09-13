@@ -1,0 +1,11 @@
+# Python cache and virtual environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+
+# Local runtime/config files
+.env
+bot_state.json
+opencode.json
+*.log
