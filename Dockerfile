@@ -35,4 +35,4 @@ COPY . .
 EXPOSE 8000
 
 # Run the application
-CMD ["sh", "-c", "uvicorn backend:app --host ${HOST} --port ${PORT} --reload=False"]
+CMD ["sh", "-c", "uvicorn backend:app --host ${HOST} --port ${PORT}"]
