@@ -1,38 +1,25 @@
-# Use Python 3.11 slim as base
 FROM python:3.11-slim
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-ENV PORT=8001
-ENV HOST=0.0.0.0
+# Instalar Node.js 20 (necesario para gmgn-cli)
+RUN apt-get update && apt-get install -y curl
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+RUN apt-get install -y nodejs
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
-    gnupg \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Node.js (LTS)
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install gmgn-cli globally
+# Instalar gmgn-cli globalmente
 RUN npm install -g gmgn-cli
 
-# Set working directory
+# Configurar directorio de trabajo
 WORKDIR /app
 
-# Copy requirements and install Python dependencies
+# Copiar e instalar dependencias de Python
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application
+# Copiar el resto del código
 COPY . .
 
-# Expose the port
+# Exponer el puerto de Render
 EXPOSE 8000
 
-# Run the application
-CMD ["sh", "-c", "uvicorn backend:app --host ${HOST} --port ${PORT}"]
+# Comando de arranque (Render inyecta la variable $PORT)
+CMD ["sh", "-c", "gunicorn backend:app -w 1 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT"]
