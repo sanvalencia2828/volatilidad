@@ -22,4 +22,4 @@ COPY . .
 EXPOSE 8000
 
 # Comando de arranque (Render inyecta la variable $PORT)
-CMD ["sh", "-c", "gunicorn backend:app -w 1 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT"]
+CMD gunicorn backend:app -w 1 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:${PORT}
