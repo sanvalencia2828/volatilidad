@@ -231,7 +231,8 @@ def make_app(bridge_init: Optional[Any] = None) -> FastAPI:
 
 
 app = make_app()
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
+app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/", StaticFiles(directory="static", html=True), name="root")
 
 if __name__ == "__main__":
     import uvicorn
