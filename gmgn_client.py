@@ -131,13 +131,16 @@ class GMGNClient:
                 return hit[1]
 
         cmd = _gmgn_prefix() + list(args) + ["--raw"]
+        run_env = os.environ.copy()
+        if env:
+            run_env.update(env)
         self.bucket.acquire(WEIGHTS.get(subcommand, 3))
 
         max_attempts = 2 if subcommand in ("trending", "trenches") else 3
         for attempt in range(max_attempts):
             try:
                 r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8",
-                                   errors="replace", timeout=timeout, env=env)
+                                   errors="replace", timeout=timeout, env=run_env)
             except FileNotFoundError:
                 logging.error("gmgn-cli/node no encontrado en PATH.")
                 return None
