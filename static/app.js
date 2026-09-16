@@ -177,12 +177,11 @@ function renderTokens(tokens) {
       </div>
     `;
 
-    const triggerOpen = () => openDossier(normalized.address, currentChain, normalized);
-    card.addEventListener('click', triggerOpen);
+    card.addEventListener('click', () => openDossier(token.address, token.chain || 'sol'));
     card.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        triggerOpen();
+        openDossier(token.address, token.chain || 'sol');
       }
     });
 
@@ -201,7 +200,11 @@ function closeModal() {
 }
 
 async function openDossier(address, chain = 'sol', prefill = null) {
-  if (!address || address === '—') return;
+  if (typeof address !== 'string' || !address.trim() || address === '—') return;
+
+  const resolvedChain = chain || 'sol';
+  modalAddressEl.textContent = address;
+  modalChainEl.textContent = resolvedChain.toUpperCase();
 
   // Immediately prefill and display all known metrics with 0 lag
   if (prefill) {
@@ -209,8 +212,6 @@ async function openDossier(address, chain = 'sol', prefill = null) {
   } else {
     modalSymbolEl.textContent = 'Cargando...';
     modalNameEl.textContent = '—';
-    modalAddressEl.textContent = address;
-    modalChainEl.textContent = chain.toUpperCase();
     dossierPriceEl.textContent = '—';
     dossierMarketCapEl.textContent = '—';
     dossierLiquidityEl.textContent = '—';
@@ -236,7 +237,7 @@ async function openDossier(address, chain = 'sol', prefill = null) {
   const timeoutId = setTimeout(() => controller.abort(), 15000);
 
   try {
-    const url = `${API_BASE}/api/dossier?chain=${encodeURIComponent(chain)}&address=${encodeURIComponent(address)}`;
+    const url = `${API_BASE}/api/dossier?chain=${encodeURIComponent(resolvedChain)}&address=${encodeURIComponent(address)}`;
     const response = await fetch(url, { signal: controller.signal });
     clearTimeout(timeoutId);
 
