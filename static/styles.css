@@ -1,22 +1,22 @@
 :root {
-  --bg: #0b1020;
-  --bg-2: #121a2d;
-  --panel: #162238;
-  --panel-2: #1d2d46;
-  --text: #eaf2ff;
-  --muted: #9bb0d1;
-  --primary: #62d0ff;
-  --accent: #7ef0c9;
-  --warning: #ffca7a;
-  --danger: #ff7a7a;
-  --shadow: rgba(10, 18, 30, 0.45);
+  --bg: #0a0907;
+  --bg-2: #14110b;
+  --panel: #191510;
+  --panel-2: #211c14;
+  --text: #ece3d0;
+  --muted: #8a8268;
+  --primary: #c8f24a;
+  --accent: #5fb4c4;
+  --warning: #f0a93b;
+  --danger: #ec5a40;
+  --shadow: rgba(0, 0, 0, 0.55);
 }
 
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "IBM Plex Mono", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background: radial-gradient(circle at top, var(--bg-2), var(--bg));
   color: var(--text);
 }

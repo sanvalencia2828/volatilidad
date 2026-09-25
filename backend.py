@@ -8,6 +8,7 @@ from typing import Any, Dict, List, Optional
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -232,7 +233,11 @@ def make_app(bridge_init: Optional[Any] = None) -> FastAPI:
 
 app = make_app()
 app.mount("/static", StaticFiles(directory="static"), name="static")
-app.mount("/", StaticFiles(directory="static", html=True), name="root")
+
+
+@app.get("/")
+async def root():
+    return FileResponse("static/index.html")
 
 if __name__ == "__main__":
     import uvicorn
